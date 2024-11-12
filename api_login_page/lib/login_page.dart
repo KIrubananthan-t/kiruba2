@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
-import 'workspaces_tab.dart';
+import 'main.dart'; // Import MainScreen instead of WorkspacesTab
 
 // AuthService that handles the authentication logic.
 class AuthService {
@@ -225,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
     } else if (credentials[emailController.text] == passwordController.text) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const WorkspacesTab()),
+        MaterialPageRoute(builder: (context) => const MainScreen()), // Navigate to MainScreen
       );
     } else {
       _showMessage(context, 'Incorrect email or password.');
