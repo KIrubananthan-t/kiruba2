@@ -57,7 +57,7 @@ class WorkspacesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container( // Removed Scaffold and replaced with Container
+    return Container(
       color: const Color(0xFFF8F0F8), // Light pink background
       child: Center(
         child: SingleChildScrollView(
@@ -79,7 +79,6 @@ class WorkspacesTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                // User Information
                 const Icon(Icons.account_circle, size: 40, color: Colors.black),
                 const SizedBox(height: 10),
                 const Text(
@@ -93,82 +92,21 @@ class WorkspacesTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
 
-                // Workspace Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Create Workspace"),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextField(
-                                    decoration: const InputDecoration(labelText: "Name"),
-                                  ),
-                                  TextField(
-                                    decoration: const InputDecoration(labelText: "Summary"),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Text("Permission", style: TextStyle(fontWeight: FontWeight.bold)),
-                                  ListTile(
-                                    title: const Text("Personal"),
-                                    leading: Radio(value: 1, groupValue: 0, onChanged: (value) {}),
-                                  ),
-                                  ListTile(
-                                    title: const Text("Team"),
-                                    leading: Radio(value: 2, groupValue: 0, onChanged: (value) {}),
-                                  ),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("Cancel"),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // Add create workspace logic here
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("Create Workspace"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        backgroundColor: Colors.blue,
-                      ),
-                      child: const Text("Create Workspace", style: TextStyle(fontSize: 14)),
+                      onPressed: () {},
+                      child: const Text("Create Workspace"),
                     ),
                     OutlinedButton(
                       onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        side: const BorderSide(color: Colors.blue),
-                      ),
-                      child: const Text("Import Workspace", style: TextStyle(fontSize: 14, color: Colors.blue)),
+                      child: const Text("Import Workspace"),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
 
-                // Recently Visited Workspaces
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -182,10 +120,10 @@ class WorkspacesTab extends StatelessWidget {
                   child: ListView(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    children: const [
-                      WorkspaceItem(name: "Workspace A"),
-                      WorkspaceItem(name: "Workspace B"),
-                      WorkspaceItem(name: "Workspace C"),
+                    children: [
+                      WorkspaceItem(name: "Workspace A"), // Clickable item
+                      const WorkspaceItem(name: "Workspace B"),
+                      const WorkspaceItem(name: "Workspace C"),
                     ],
                   ),
                 ),
@@ -212,32 +150,114 @@ class WorkspaceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6.0,
-            spreadRadius: 2.0,
-          ),
-        ],
+    return InkWell(
+      onTap: () {
+        if (name == "Workspace A") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WorkspaceDetailsPage(),
+            ),
+          );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 6.0,
+              spreadRadius: 2.0,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                TextButton(onPressed: () {}, child: const Text("Export", style: TextStyle(color: Colors.blue))),
+                TextButton(onPressed: () {}, child: const Text("Reports", style: TextStyle(color: Colors.blue))),
+                TextButton(onPressed: () {}, child: const Text("Settings", style: TextStyle(color: Colors.blue))),
+              ],
+            ),
+          ],
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Row(
-            children: [
-              TextButton(onPressed: () {}, child: const Text("Export", style: TextStyle(color: Colors.blue))),
-              TextButton(onPressed: () {}, child: const Text("Reports", style: TextStyle(color: Colors.blue))),
-              TextButton(onPressed: () {}, child: const Text("Settings", style: TextStyle(color: Colors.blue))),
-            ],
-          ),
-        ],
+    );
+  }
+}
+
+class WorkspaceDetailsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Workspace A Details'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            ListTile(
+              title: const Text('Published'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Published on: 22/10/2024'),
+                  const Text('Published by: ramachandar@redcaso.com'),
+                ],
+              ),
+              trailing: ElevatedButton(
+                onPressed: () {},
+                child: const Text('Publish'),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              title: const Text('Developer Base URL'),
+              subtitle: const Text('https://api.nxtplatform.io/100368/3PLToInventory'),
+              trailing: IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  // Copy URL to clipboard
+                },
+              ),
+            ),
+            const SizedBox(height: 20),
+            const ExpansionTile(
+              title: Text('Primary Keys'),
+              children: [
+                ListTile(
+                  title: Text('Key'),
+                  subtitle: Text('36c68372eb814f53a5a7928e8bef5394'),
+                ),
+                ListTile(
+                  title: Text('Secret'),
+                  subtitle: Text('e01824e3a5b6492db9375d19b5534030'),
+                ),
+              ],
+            ),
+            const ExpansionTile(
+              title: Text('Secondary Keys'),
+              children: [
+                ListTile(
+                  title: Text('Key'),
+                  subtitle: Text('c1773938ff9049ff8c6dbb64ec76b969'),
+                ),
+                ListTile(
+                  title: Text('Secret'),
+                  subtitle: Text('ea066b118d3448248c03139b5536657f'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

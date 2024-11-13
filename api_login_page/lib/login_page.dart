@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'HomePage.dart';
 import 'main.dart'; // Import MainScreen instead of WorkspacesTab
 
-// AuthService that handles the authentication logic.
 class AuthService {
   Future<void> authenticate(String username, String password) async {
     print('Authenticating $username');
@@ -24,6 +23,24 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isRememberMeChecked = false;
   final String _captchaText = 'InZ4L4'; // Static CAPTCHA text for demonstration
+  bool _obscurePassword = true; // To control password visibility
+  bool _isSignInEnabled = false; // To control "Sign In" button state
+
+  @override
+  void initState() {
+    super.initState();
+    emailController.addListener(_checkFieldsFilled);
+    passwordController.addListener(_checkFieldsFilled);
+    captchaController.addListener(_checkFieldsFilled);
+  }
+
+  void _checkFieldsFilled() {
+    setState(() {
+      _isSignInEnabled = emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty &&
+          captchaController.text.isNotEmpty;
+    });
+  }
 
   void _login() async {
     final username = emailController.text;
@@ -77,12 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: 'Enter your email',
                   controller: emailController,
                 ),
-                _buildTextField(
-                  label: 'Password',
-                  hintText: 'Enter your password',
-                  obscureText: true,
-                  controller: passwordController,
-                ),
+                _buildPasswordField(), // Updated password field with visibility toggle
                 _buildCaptcha(),
                 _buildRememberMeCheckbox(),
                 _buildSignInButton(context),
@@ -138,35 +150,78 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildCaptcha() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: captchaController,
+  Widget _buildPasswordField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Password', style: TextStyle(fontSize: 14, color: Colors.black87)),
+          TextField(
+            controller: passwordController,
+            obscureText: _obscurePassword,
             decoration: InputDecoration(
-              label: Text('Please Enter CAPTCHA'),
-              hintText: 'Enter CAPTCHA',
+              hintText: 'Enter your password',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+              suffixIcon: IconButton(
+                icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 10),
-        Column(
-          children: [
-            Text(_captchaText, style: const TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold)),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {}, // Implement refresh CAPTCHA functionality if needed
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
+Widget _buildCaptcha() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        'Please enter captcha',
+        style: TextStyle(fontSize: 14, color: Colors.black87),
+      ),
+      const SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            _captchaText,
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {}, // Implement refresh CAPTCHA functionality if needed
+          ),
+        ],
+      ),
+      const SizedBox(height: 10),
+      TextField(
+        controller: captchaController,
+        obscureText: true, // Hides CAPTCHA text like a password
+        decoration: InputDecoration(
+          label: Text('Enter CAPTCHA'),
+          hintText: 'Enter CAPTCHA',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildRememberMeCheckbox() {
     return Row(
@@ -179,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
               _isRememberMeChecked = value ?? false;
               if (_isRememberMeChecked) {
                 emailController.text = 'ramchandar@redcaso.com';
-                passwordController.text = '12345';
+                passwordController.text = 'Redcaso@123';
               } else {
                 emailController.clear();
                 passwordController.clear();
@@ -203,9 +258,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           backgroundColor: Colors.blue,
         ),
-        onPressed: () {
-          _validateCredentials(context);
-        },
+        onPressed: _isSignInEnabled ? () => _validateCredentials(context) : null,
         child: const Text('Sign In', style: TextStyle(fontSize: 16)),
       ),
     );
@@ -213,7 +266,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _validateCredentials(BuildContext context) {
     const credentials = {
-      'ramchandar@redcaso.com': '12345',
+      'ramchandar@redcaso.com': 'Redcaso@123',
       'kirubananthan.thangadurai@redcaso.com': '123456',
       'rishikumar.baskar@redcaso.com': '1234567',
     };
