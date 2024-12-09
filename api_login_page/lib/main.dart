@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'workspaces_tab.dart';
+import 'workspace_edit.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,16 +14,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'API Login Page',
+      title: 'API Matrix',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
+      home: const MainScreen(),
     );
   }
 }
 
-// Define the main tabbed interface for after successful login
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -31,76 +31,123 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  TextEditingController searchController = TextEditingController();
-  bool isSearching = false;
+  String _selectedMenu = 'Home';
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-        appBar: AppBar(
-          title: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: isSearching ? MediaQuery.of(context).size.width * 0.7 : 200,
-            child: isSearching
-                ? TextField(
-                    controller: searchController,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: 'Search...',
-                      hintStyle: const TextStyle(color: Colors.black54),
-                      prefixIcon: const Icon(Icons.search, color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                    ),
-                    style: const TextStyle(color: Colors.black),
-                    onChanged: (value) {
-                      // Implement search functionality here
-                    },
-                  )
-                : const Text('API Matrix'),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(isSearching ? Icons.close : Icons.search),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('API Matrix'),
+        centerTitle: true,
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
               onPressed: () {
-                setState(() {
-                  isSearching = !isSearching;
-                  if (!isSearching) {
-                    searchController.clear(); // Clear search field when closing
-                  }
-                });
+                Scaffold.of(context).openDrawer();
               },
-            ),
-          ],
-          bottom: const TabBar(
-            isScrollable: true,
-            tabs: [
-              Tab(text: "Workspaces"),
-              Tab(text: "Licenses"),
-              Tab(text: "API Developer Portal"),
-              Tab(text: "Permissions"),
-              Tab(text: "Reports"),
-            ],
-          ),
+            );
+          },
         ),
-        body: const TabBarView(
-          children: [
-            WorkspacesTab(),                // Custom widget for "Workspaces" tab
-            Center(child: Text("Licenses")), // Placeholder for "Licenses" tab
-            Center(child: Text("API Developer Portal")), // Placeholder
-            Center(child: Text("Permissions")), // Placeholder
-            Center(child: Text("Reports")),    // Placeholder
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color.fromARGB(255, 241, 242, 243)),
+              child: Text(
+                'Menu',
+                style: TextStyle(color: Color.fromARGB(255, 11, 5, 48), fontSize: 24),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  _buildDrawerItem('Home'),
+                  _buildDrawerItem('WorkSpace'),
+                  _buildDrawerItem('API Developer Portal'),
+                  _buildDrawerItem('Permissions'),
+                  _buildDrawerItem('Reports'),
+                  const Divider(),
+                  _buildDrawerItem('Settings'),
+                  _buildDrawerItem('Logout'),
+                ],
+              ),
+            ),
           ],
         ),
       ),
+      body: _getSelectedPage(),
+    );
+  }
+
+  Widget _buildDrawerItem(String title) {
+    return InkWell(
+      onTap: () {
+        if (title == 'Logout') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        } else if (title == 'Settings') {
+          Navigator.pop(context);
+          _showSettingsDialog(context);
+        } else {
+          setState(() {
+            _selectedMenu = title;
+          });
+          Navigator.of(context).pop();
+        }
+      },
+      child: Container(
+        color: _selectedMenu == title ? Colors.blue : Colors.transparent,
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: _selectedMenu == title ? Colors.white : Colors.black,
+            fontSize: 18.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _getSelectedPage() {
+    switch (_selectedMenu) {
+      case 'Home':
+        return const WorkspacesTab();
+      case 'WorkSpace':
+        return const WorkspaceEdit(workspaceName: 'DefaultWorkspace');
+      case 'API Developer Portal':
+        return const Center(child: Text("API Developer Portal"));
+      case 'Permissions':
+        return const Center(child: Text("Permissions"));
+      case 'Reports':
+        return const Center(child: Text("Reports"));
+      default:
+        return const Center(child: Text("Select a menu item"));
+    }
+  }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Settings'),
+          content: const Text('Settings page (coming soon).'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

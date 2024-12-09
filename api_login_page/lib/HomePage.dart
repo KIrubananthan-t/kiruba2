@@ -27,8 +27,16 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController captchaController = TextEditingController();
+  String _captchaText = "TGmWBh"; // This is a placeholder captcha text
 
   @override
   Widget build(BuildContext context) {
@@ -78,27 +86,9 @@ class LoginPage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // Captcha and Refresh
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(hintText: 'Enter captcha'),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      children: [
-                        const Text(
-                          'TGmWBh',
-                          style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.refresh),
-                          onPressed: () {}, // Implement refresh captcha functionality
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                // Updated Captcha Section
+                _buildCaptcha(),
+
                 const SizedBox(height: 20),
 
                 // Reset Password Button
@@ -146,6 +136,54 @@ class LoginPage extends StatelessWidget {
     );
   }
 
+  // Captcha Widget
+  Widget _buildCaptcha() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Please enter captcha',
+          style: TextStyle(fontSize: 14, color: Colors.black87),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              _captchaText, // Display current captcha text
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                setState(() {
+                  // Implement logic to refresh the captcha here (e.g., generate a new one)
+                  _captchaText = "NewCaptcha"; // Update with a new captcha value
+                });
+              }, 
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: captchaController,
+          decoration: InputDecoration(
+            hintText: 'Enter CAPTCHA',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Email and Password TextField widget
   Widget _buildTextField({String? label, required String hintText}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

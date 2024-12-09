@@ -11,9 +11,13 @@ class AuthService {
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
+
   @override
   State<LoginPage> createState() => _LoginPageState();
+
+ 
 }
+
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
@@ -209,9 +213,7 @@ Widget _buildCaptcha() {
       const SizedBox(height: 10),
       TextField(
         controller: captchaController,
-        obscureText: true, // Hides CAPTCHA text like a password
         decoration: InputDecoration(
-          label: Text('Enter CAPTCHA'),
           hintText: 'Enter CAPTCHA',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
